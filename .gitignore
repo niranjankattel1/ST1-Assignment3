@@ -1,3 +1,9 @@
+##Custom
+logs/
+outputs/
+images/stream_macroinvertebrates/
+images/FIN_Benthic2
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
