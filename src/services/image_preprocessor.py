@@ -3,7 +3,7 @@ import numpy as np
 
 # initial version, not finished needs to be edited - rohit
 
-class Imagepreprocessor:
+class ImagePreProcessor:
     
     def __init__(self, resized_img: tuple = (128,128)):
         self.resized_img = resized_img

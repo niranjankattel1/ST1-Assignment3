@@ -1,3 +1,4 @@
 kagglehub
-cv2
+opencv-python
+pandas
 numpy
