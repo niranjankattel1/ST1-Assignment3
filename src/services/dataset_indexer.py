@@ -1,7 +1,7 @@
 from pathlib import Path
 import cv2
 import pandas as pd
-# from config import RAW_DATA_DIR, SUPPORTED_EXTENSIONS
+from config import RAW_DATA_DIR, SUPPORTED_EXTENSIONS
 
 class Data_indexer:
     def __init__(self, data_dir: Path = RAW_DATA_DIR):
