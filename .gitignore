@@ -1,9 +1,7 @@
 ##Custom
 data/
 logs/
-outputs/
-images/stream_macroinvertebrates/
-images/FIN_Benthic2
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
