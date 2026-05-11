@@ -58,7 +58,7 @@ class DatasetIndexer:
         """Save the processed dataframe to the processed data directory."""
 
         output_path = self.processed_data_dir / filename
-        self.processed_data_dir.mkdir(parents=True, exist_ok=True)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path, index=False)
         print(f"Indexed data saved to {output_path}")
         return output_path
@@ -85,6 +85,5 @@ class DatasetIndexer:
         for ax in axes.flat[len(sample_df):]:
             ax.axis("off")
         plt.tight_layout()
-        output_path.mkdir(parents=True, exist_ok=True)
         plt.savefig(output_path)
         plt.close()
