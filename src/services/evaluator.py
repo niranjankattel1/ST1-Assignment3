@@ -12,7 +12,7 @@ class Evaluator:
     def evaluate(self, y_true, y_pred) -> dict:
         """Compute evaluation metrics."""
         accuracy = accuracy_score(y_true, y_pred)
-        report = classification_report(y_true, y_pred, output_dict=True)
+        report = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         return {
             'accuracy': accuracy,
             'classification_report': report
