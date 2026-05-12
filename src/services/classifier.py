@@ -48,3 +48,24 @@ class Classifier:
         output_path = self.model_output_dir / file_name
         joblib.dump(self.model, output_path)
         return output_path
+
+    def load_model(self, file_name="macro_classifier.joblib") -> None:
+        # Load a saved trained model
+
+        model_path = self.model_output_dir / file_name
+
+        self.model = joblib.load(model_path)
+
+    def predict_single(self, image_path: str):
+
+        image = self.preprocessor.transform(image_path)
+
+        image = np.array([image])
+
+        probabilities = self.model.predict_proba(image)
+
+        confidence = np.max(probabilities)
+
+        prediction = self.model.predict(image)
+
+        return prediction[0], confidence
