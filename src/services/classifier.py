@@ -2,20 +2,25 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
+import seaborn as sns
+from config import OUTPUTS_DIR
+
+
 class Classifier:
     """Train, evaluate, and persist the baseline classification model."""
     def __init__(self, preprocessor, model_output_dir: Path) -> None:
         self.preprocessor = preprocessor
         self.model_output_dir = model_output_dir
+        self.model_output_dir.mkdir(parents=True, exist_ok=True)
         self.model = RandomForestClassifier(
             n_estimators=200,
             random_state=42,
             n_jobs=-1
         )
-
 
     def prepare_features(self, dataframe: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
         """Convert indexed file paths into model features and labels."""
@@ -27,20 +32,24 @@ class Classifier:
             labels.append(row["label"])
         return np.array(features), np.array(labels)
 
-    def train(self, dataframe: pd.DataFrame) -> dict[str, object]:
+    def train(self, dataframe: pd.DataFrame, save_report:bool = False, save_confusion_matrix:bool = False) -> dict[str, object]:
         """Fit the model and return evaluation outputs."""
 
         X, y = self.prepare_features(dataframe)
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42, stratify=y
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
         self.model.fit(X_train, y_train)
         predictions = self.model.predict(X_test)
         results = {
             "accuracy": accuracy_score(y_test, predictions),
-            "report": classification_report(y_test, predictions, zero_division=0),
+            "report": classification_report(y_test, predictions, zero_division=0),  # Added: Suppress warnings by setting zero_division=0
             "confusion_matrix": confusion_matrix(y_test, predictions),
         }
+
+        if save_report:
+            self._save_training_report(results)
+        if save_confusion_matrix:
+            labels = np.unique(np.concatenate([y_test, predictions]))
+            self._save_confusion_matrix_plot(results, labels.tolist())
         return results
 
     def save_model(self, file_name="macro_classifier.joblib") -> Path:
@@ -49,23 +58,41 @@ class Classifier:
         joblib.dump(self.model, output_path)
         return output_path
 
-    def load_model(self, file_name="macro_classifier.joblib") -> None:
-        # Load a saved trained model
+    @staticmethod
+    def _save_training_report(results: dict[str, object], output_dir: Path = None) -> None:
+        """Write the classification report to a text file."""
 
-        model_path = self.model_output_dir / file_name
+        if output_dir is None:
+            output_dir = OUTPUTS_DIR
 
-        self.model = joblib.load(model_path)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        report_path = output_dir / "classification_report.txt"
+        report_path.write_text(results["report"], encoding="utf-8")
 
-    def predict_single(self, image_path: str):
+    @staticmethod
+    def _save_confusion_matrix_plot(
+            results: dict[str, object],
+            labels: list[str],
+            output_dir: Path = None,
+    ) -> None:
+        """Save a confusion matrix heatmap image."""
 
-        image = self.preprocessor.transform(image_path)
+        if output_dir is None:
+            output_dir = OUTPUTS_DIR
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-        image = np.array([image])
-
-        probabilities = self.model.predict_proba(image)
-
-        confidence = np.max(probabilities)
-
-        prediction = self.model.predict(image)
-
-        return prediction[0], confidence
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(
+            results["confusion_matrix"],
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            xticklabels=labels,
+            yticklabels=labels
+        )
+        plt.title("Confusion Matrix")
+        plt.xlabel("Predicted")
+        plt.ylabel("Actual")
+        plt.tight_layout()
+        plt.savefig(output_dir / "confusion_matrix.png")
+        plt.close()

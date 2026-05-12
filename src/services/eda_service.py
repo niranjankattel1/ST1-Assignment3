@@ -6,12 +6,15 @@ import cv2
 
 class EDAService:
     """Generate and save EDA outputs for the indexed image dataset."""
+
     def __init__(self, dataframe: pd.DataFrame, output_dir: Path) -> None:
         self.dataframe = dataframe
         self.output_dir = output_dir
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def save_class_distribution(self) -> None:
         """Save a class-count chart for the dataset."""
+
         plt.figure(figsize=(12, 6))
         order = self.dataframe["label"].value_counts().index
         sns.countplot(data=self.dataframe, x="label", order=order)
@@ -23,6 +26,7 @@ class EDAService:
 
     def save_image_size_distribution(self) -> None:
         """Save width and height distribution charts."""
+
         fig, axes = plt.subplots(1, 2, figsize=(12, 5))
         sns.histplot(self.dataframe["width"], bins=20, ax=axes[0])
         sns.histplot(self.dataframe["height"], bins=20, ax=axes[1])
@@ -34,6 +38,7 @@ class EDAService:
 
     def build_summary(self) -> dict[str, float]:
         """Return key dataset summary statistics."""
+
         return {
             "total_images": int(len(self.dataframe)),
             "total_classes": int(self.dataframe["label"].nunique()),
@@ -41,8 +46,12 @@ class EDAService:
             "mean_height": float(self.dataframe["height"].mean()),
         }
 
-    def save_sample_grid(self, dataframe: pd.DataFrame, output_path: Path, sample_count: int = 9,) -> None:
+    def save_sample_grid(self, output_path: Path = None, sample_count: int = 9,) -> None:
         """Save a grid of sample images for quick visual inspection."""
+        dataframe = self.dataframe
+        if output_path is None:
+            output_path = self.output_dir / "sample_grid.png"
+
         sample_df = dataframe.sample(min(sample_count, len(dataframe)),random_state=42)
         fig, axes = plt.subplots(3, 3, figsize=(10, 10))
         for ax, (_, row) in zip(axes.flat, sample_df.iterrows()):
