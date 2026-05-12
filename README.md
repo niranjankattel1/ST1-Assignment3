@@ -58,13 +58,13 @@ Required packages include:
 This will download the dataset, index images, generate EDA outputs, train the model, and save results.
 
 ```bash
-python src/main.py
+python -m src.main
 ```
 
 ### Run the interactive console app
 
 ```bash
-python src/console_app.py
+python -m src.console_app
 ```
 
 From the console menu you can:

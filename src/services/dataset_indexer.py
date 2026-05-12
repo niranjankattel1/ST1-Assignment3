@@ -1,8 +1,8 @@
 from pathlib import Path
 import cv2
 import pandas as pd
-from config import RAW_DATA_DIR, SUPPORTED_EXTENSIONS, PROCESSED_DATA_DIR
-from models.image_record import ImageRecord
+from src.config import RAW_DATA_DIR, SUPPORTED_EXTENSIONS, PROCESSED_DATA_DIR
+from src.models.image_record import ImageRecord
 
 
 class DatasetIndexer:

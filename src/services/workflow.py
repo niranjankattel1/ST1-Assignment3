@@ -7,7 +7,7 @@ from src.services.classifier import Classifier
 from src.services.dataset_indexer import DatasetIndexer
 from src.services.eda_service import EDAService
 from src.services.image_preprocessor import ImagePreprocessor
-from services.kaggle_hub import KaggleHub
+from .kaggle_hub import KaggleHub
 
 
 class WorkflowService:

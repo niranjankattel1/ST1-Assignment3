@@ -1,5 +1,5 @@
 from pathlib import Path
-from services.workflow import WorkflowService
+from .services.workflow import WorkflowService
 
 class ConsoleApp:
     """Menu-driven console application for the workflow."""

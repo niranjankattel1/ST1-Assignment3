@@ -1,4 +1,4 @@
-from services.workflow import WorkflowService
+from .services.workflow import WorkflowService
 
 def main():
     """Run the default non-interactive project workflow."""
