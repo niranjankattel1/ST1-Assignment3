@@ -30,14 +30,18 @@ pip install -r requirements.txt
 ```
 
 Required packages include:
-- `opencv-python`
-- `pandas`
-- `numpy`
-- `scikit-learn`
-- `matplotlib`
-- `seaborn`
-- `joblib`
-- `kagglehub`
+- `opencv-python` - load and preprocess images
+- `pandas` - manage dataset records and indexed CSV data
+- `numpy` - numerical arrays for image features
+- `scikit-learn` - train and evaluate the classifier
+- `matplotlib` - generate EDA plots
+- `seaborn` - style and display statistical charts
+- `joblib` - save and load the trained model
+- `kagglehub` - download the raw dataset from Kaggle
+
+Builtin libraries used in the project:
+- `random` - sample images for the `test_data` set
+- `shutil` - move files and clear the test directory
 
 ## Project Structure
 
