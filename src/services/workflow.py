@@ -21,13 +21,17 @@ class WorkflowService:
         self.classifier = Classifier(self.preprocessor, MODEL_OUTPUT_DIR)
         self.dataframe: pd.DataFrame | None = None
 
-        KaggleHub(RAW_DATA_DIR).get_raw_data()
+        kaggle_hub = KaggleHub(RAW_DATA_DIR)
+        kaggle_hub.get_raw_data()
+        kaggle_hub.organize_data()
+
 
     def load_dataframe(self) -> DataFrame:
         """Load and cache the indexed dataset."""
 
         if self.dataframe is None:
             self.dataframe = self.indexer.build_dataframe()
+            self.indexer.save_indexed_data(self.dataframe)
         return self.dataframe
 
     def show_summary(self) -> dict[str, float]:
