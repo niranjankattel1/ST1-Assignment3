@@ -41,6 +41,11 @@ class KaggleHub:
             selected_dirs.append(folder_path)
 
         test_data_root = self.output_dir.parent / "test_data"
+        
+        # Clear existing test_data directory if it exists
+        if test_data_root.exists():
+            shutil.rmtree(test_data_root)
+        
         test_data_root.mkdir(parents=True, exist_ok=True)
 
         for species_dir in selected_dirs:
