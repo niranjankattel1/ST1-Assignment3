@@ -22,6 +22,13 @@ git clone https://github.com/niranjankattel1/ST1-Assignment3.git
 cd ST1-Assignment3
 ```
 
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
 ## Requirements
 Install dependencies from `requirements.txt`:
 
