@@ -14,6 +14,14 @@ This project analyzes and classifies stream macroinvertebrate images using a mac
 - Saves the trained model and evaluation reports
 - Supports console-driven interaction via `src/console_app.py`
 
+## Setup
+Clone the repository and change into the project folder:
+
+```bash
+git clone https://github.com/niranjankattel1/ST1-Assignment3.git
+cd ST1-Assignment3
+```
+
 ## Requirements
 Install dependencies from `requirements.txt`:
 
