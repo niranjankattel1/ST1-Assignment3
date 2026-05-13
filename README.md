@@ -45,6 +45,7 @@ Required packages include:
 - `seaborn` - style and display statistical charts
 - `joblib` - save and load the trained model
 - `kagglehub` - download the raw dataset from Kaggle
+- 'pathlib' - for custom path selction
 
 Builtin libraries used in the project:
 - `random` - sample images for the `test_data` set
@@ -75,6 +76,8 @@ Builtin libraries used in the project:
 
 ### Run the full pipeline
 This will download the dataset, index images, generate EDA outputs, train the model, and save results.
+
+copy paste custom path to sutom_input_file.txt to output results to custom folder
 
 ```bash
 python -m src.main

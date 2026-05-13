@@ -1,10 +1,16 @@
 from pathlib import Path
+from .custom_input import CustomInput
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
-OUTPUTS_DIR = BASE_DIR / "output"
+
+try:
+    OUTPUTS_DIR = CustomInput().custompath()
+except ValueError:
+    OUTPUTS_DIR = BASE_DIR / "output"
+
 EDA_OUTPUT_DIR = OUTPUTS_DIR / "EDA"
 MODEL_OUTPUT_DIR = OUTPUTS_DIR / "models"
 
