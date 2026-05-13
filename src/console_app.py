@@ -22,6 +22,8 @@ class ConsoleApp:
                     self.workflow_service.train_model()
                 elif choice == "4":
                     image_path = self._get_image_path()
+                    if image_path is None:
+                        continue
                     self.workflow_service.predict_image(image_path)
                 elif choice == "5":
                     print("Exiting application.")
@@ -49,16 +51,19 @@ class ConsoleApp:
             print("Invalid option. Please enter a number from 1 to 5.")
 
     @staticmethod
-    def _get_image_path() -> str:
+    def _get_image_path() -> str | None:
         while True:
-            image_path = input("Enter image path: ").strip()
+            image_path = input("Enter image path (or type 'b' to go back): ").strip()
+            if image_path.lower() in {"b", "back"}:
+                return None
+
             if not image_path:
-                print("Image path cannot be empty. Please try again.")
+                print("Image path cannot be empty. Please try again or type 'b' to return to the menu.")
                 continue
 
             path = Path(image_path)
             if not path.exists() or not path.is_file():
-                print("File not found. Please enter a valid image path.")
+                print("File not found. Please enter a valid image path or type 'b' to go back.")
                 continue
             return str(path)
 
