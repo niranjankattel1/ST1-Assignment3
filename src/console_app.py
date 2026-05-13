@@ -35,12 +35,14 @@ class ConsoleApp:
 
     @staticmethod
     def _print_menu() -> None:
+        print("-----------------------------------------")
         print("Macroinvertebrate Image Analysis System")
         print("1. Show dataset summary")
         print("2. Generate EDA outputs")
         print("3. Train baseline classifier")
         print("4. Predict an image")
         print("5. Exit")
+        print("-----------------------------------------")
 
     @staticmethod
     def _get_menu_choice() -> str:
