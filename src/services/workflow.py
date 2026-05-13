@@ -68,7 +68,10 @@ class WorkflowService:
             self.classifier.model = joblib.load(model_path)
         features = self.preprocessor.transform(file_path).reshape(1, -1)
         prediction = self.classifier.model.predict(features)[0]
-        print(f"Predicted class: {prediction}")
+        probability = self.classifier.model.predict_proba(features)[0]
+        confidence = float(probability.max())*100 ## convert to precentage
+        
+        print(f"Predicted class: {prediction}, Confidence: {confidence}%") # added confidence
         return str(prediction)
 
     def run_full_pipeline(self) -> None:
