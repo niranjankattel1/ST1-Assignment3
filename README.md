@@ -77,6 +77,24 @@ From the console menu you can:
 ### Predict a single image
 After training, use the console app option `4` or call `WorkflowService.predict_image()` with an image file path.
 
+## Testing
+
+### Test Predictions on Test Data
+The `tests/test_predictions.py` script predicts the class of all images in the `data/test_data/` directory using the trained model.
+
+```bash
+python -m tests.test_predictions
+```
+
+This script:
+- Loads the trained model from `output/models/macro_classifier.joblib`
+- Scans the `data/test_data/` directory for all supported image files
+- Predicts the class for each image
+- Displays results in a formatted table showing file paths and predicted classes
+- Returns the total number of predictions made
+
+**Note:** The model must be trained first using `python -m src.main` or the console app before running predictions on test data.
+
 ## Output
 
 - `output/EDA/`
