@@ -60,19 +60,21 @@ class WorkflowService:
         self.classifier.save_model()
         return results
 
-    def predict_image(self, file_path: str) -> str:
-        """Predict the class of one input image."""
+    def predict_image(self, file_path: str) -> dict[str, object]:
+        """Predict the class of one input image and return the prediction with confidence."""
 
         model_path = MODEL_OUTPUT_DIR / "macro_classifier.joblib"
         if model_path.exists():
             self.classifier.model = joblib.load(model_path)
         features = self.preprocessor.transform(file_path).reshape(1, -1)
-        prediction = self.classifier.model.predict(features)[0]
+        prediction = str(self.classifier.model.predict(features)[0])
         probability = self.classifier.model.predict_proba(features)[0]
-        confidence = float(probability.max())*100 ## convert to precentage
-        
-        print(f"Predicted class: {prediction}, Confidence: {confidence}%") # added confidence
-        return str(prediction)
+        confidence = float(probability.max()) * 100
+
+        return {
+            "predicted_class": prediction,
+            "confidence": round(confidence, 2),
+        }
 
     def run_full_pipeline(self) -> None:
         """Run the default Stage 1 and Stage 2 workflow."""

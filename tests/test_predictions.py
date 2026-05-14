@@ -40,9 +40,9 @@ def predict_test_images():
         return
     
     print(f"Found {len(image_files)} images in test_data directory.\n")
-    print("-" * 80)
-    print(f"{'Image File':<50} | {'Predicted Class':<20}")
-    print("-" * 80)
+    print("-" * 100)
+    print(f"{'Image File':<50} | {'Predicted Class':<20} | {'Confidence':<10}")
+    print("-" * 100)
     
     predictions_results = []
     
@@ -51,11 +51,16 @@ def predict_test_images():
         try:
             features = preprocessor.transform(str(image_path))
             predicted_class = model.predict(features.reshape(1, -1))[0]
+            probability = model.predict_proba(features.reshape(1, -1))[0]
+            confidence = float(probability.max()) * 100
             relative_path = image_path.relative_to(test_data_dir)
-            print(f"{str(relative_path):<50} | {predicted_class:<20}")
+            print(
+                f"{str(relative_path):<50} | {predicted_class:<20} | {confidence:>7.2f}%"
+            )
             predictions_results.append({
                 "file": str(relative_path),
-                "predicted_class": predicted_class
+                "predicted_class": predicted_class,
+                "confidence": round(confidence, 2),
             })
         except Exception as e:
             print(f"Error predicting {image_path}: {e}")

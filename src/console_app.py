@@ -24,7 +24,11 @@ class ConsoleApp:
                     image_path = self._get_image_path()
                     if image_path is None:
                         continue
-                    self.workflow_service.predict_image(image_path)
+                    result = self.workflow_service.predict_image(image_path)
+                    print(
+                        f"Predicted class: {result['predicted_class']} "
+                        f"({result['confidence']:.2f}% confidence)"
+                    )
                 elif choice == "5":
                     print("Exiting application.")
                     break
