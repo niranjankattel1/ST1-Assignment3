@@ -43,14 +43,50 @@ class WorkflowService:
         print(summary)
         return summary
 
-    def generate_eda(self) -> None:
-        """Create and save the main EDA outputs."""
+    def get_available_classes(self) -> list[str]:
+        """Return available class folder names for EDA selection."""
+
+        class_root = RAW_DATA_DIR / "stream_macroinvertebrates"
+        if class_root.exists() and class_root.is_dir():
+            classes = sorted(
+                [path.name for path in class_root.iterdir() if path.is_dir()]
+            )
+            if classes:
+                return classes
+
+        dataframe = self.load_dataframe()
+        return sorted(dataframe["label"].dropna().unique())
+
+    def generate_eda(self, class_name: str | None = None) -> None:
+        """Create and save the main EDA outputs, optionally for one class."""
+
+        if class_name:
+            self.generate_eda_for_class(class_name)
+            return
 
         dataframe = self.load_dataframe()
         eda = EDAService(dataframe, EDA_OUTPUT_DIR)
         eda.save_class_distribution()
         eda.save_image_size_distribution()
         eda.save_sample_grid()
+
+    def generate_eda_for_class(self, class_name: str) -> None:
+        """Create and save EDA outputs for a single class."""
+
+        dataframe = self.load_dataframe()
+        if class_name not in dataframe["label"].unique():
+            raise ValueError(f"Class '{class_name}' was not found in the dataset.")
+
+        class_df = dataframe[dataframe["label"] == class_name]
+        if class_df.empty:
+            raise ValueError(f"No images were found for class '{class_name}'.")
+
+        output_dir = EDA_OUTPUT_DIR / class_name
+        eda = EDAService(class_df, output_dir)
+        eda.save_class_distribution()
+        eda.save_image_size_distribution()
+        eda.save_sample_grid(output_dir / "sample_grid.png")
+        print(f"Saved EDA outputs for class '{class_name}' to {output_dir}")
 
     def train_model(self) -> dict[str, object]:
         """Train the baseline model and save it to disk."""

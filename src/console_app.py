@@ -17,7 +17,7 @@ class ConsoleApp:
                 if choice == "1":
                     self.workflow_service.show_summary()
                 elif choice == "2":
-                    self.workflow_service.generate_eda()
+                    self._run_eda_option()
                 elif choice == "3":
                     self.workflow_service.train_model()
                 elif choice == "4":
@@ -55,6 +55,53 @@ class ConsoleApp:
             if choice in {"1", "2", "3", "4", "5"}:
                 return choice
             print("Invalid option. Please enter a number from 1 to 5.")
+
+    def _run_eda_option(self) -> None:
+        available_classes = self.workflow_service.get_available_classes()
+
+        if not available_classes:
+            print("No class folders were found for class-specific EDA.")
+            self.workflow_service.generate_eda()
+            return
+
+        while True:
+            print("EDA options:")
+            print("1. Full dataset EDA")
+            print("2. Class-specific EDA")
+            print("b. Back")
+            choice = input("Select an EDA option: ").strip().lower()
+
+            if choice == "1":
+                self.workflow_service.generate_eda()
+                return
+            if choice == "2":
+                selected_class = self._choose_eda_class(available_classes)
+                if selected_class is None:
+                    return
+                self.workflow_service.generate_eda_for_class(selected_class)
+                return
+            if choice in {"b", "back"}:
+                return
+            print("Invalid option. Please enter 1, 2, or 'b'.")
+
+    def _choose_eda_class(self, available_classes: list[str]) -> str | None:
+        print("Available classes:")
+        for index, class_name in enumerate(available_classes, start=1):
+            print(f"{index}. {class_name}")
+
+        while True:
+            choice = input("Enter class number or name (or 'b' to go back): ").strip()
+            if choice.lower() in {"b", "back"}:
+                return None
+            if choice.isdigit():
+                selected_index = int(choice)
+                if 1 <= selected_index <= len(available_classes):
+                    return available_classes[selected_index - 1]
+                print("Invalid class number. Please choose a valid index.")
+                continue
+            if choice in available_classes:
+                return choice
+            print("Invalid class name. Please choose a valid option from the list.")
 
     @staticmethod
     def _get_image_path() -> str | None:
