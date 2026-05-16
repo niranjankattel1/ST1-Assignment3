@@ -16,10 +16,16 @@ class ConsoleApp:
             try:
                 if choice == "1":
                     self.workflow_service.show_summary()
+                    print("Dataset summary complete.")
                 elif choice == "2":
-                    self._run_eda_option()
+                    eda_performed = self._run_eda_option()
+                    if eda_performed:
+                        print("EDA task completed.")
                 elif choice == "3":
-                    self.workflow_service.train_model()
+                    results = self.workflow_service.train_model()
+                    print(f"Training accuracy: {results['accuracy']:.4f}")
+                    print(results["report"])
+                    print("Training complete.")
                 elif choice == "4":
                     image_path = self._get_image_path()
                     if image_path is None:
@@ -29,6 +35,7 @@ class ConsoleApp:
                         f"Predicted class: {result['predicted_class']} "
                         f"({result['confidence']:.2f}% confidence)"
                     )
+                    print("Prediction complete.")
                 elif choice == "5":
                     print("Exiting application.")
                     break
@@ -56,13 +63,13 @@ class ConsoleApp:
                 return choice
             print("Invalid option. Please enter a number from 1 to 5.")
 
-    def _run_eda_option(self) -> None:
+    def _run_eda_option(self) -> bool:
         available_classes = self.workflow_service.get_available_classes()
 
         if not available_classes:
             print("No class folders were found for class-specific EDA.")
             self.workflow_service.generate_eda()
-            return
+            return True
 
         while True:
             print("EDA options:")
@@ -73,15 +80,15 @@ class ConsoleApp:
 
             if choice == "1":
                 self.workflow_service.generate_eda()
-                return
+                return True
             if choice == "2":
                 selected_class = self._choose_eda_class(available_classes)
                 if selected_class is None:
-                    return
+                    return False
                 self.workflow_service.generate_eda_for_class(selected_class)
-                return
+                return True
             if choice in {"b", "back"}:
-                return
+                return False
             print("Invalid option. Please enter 1, 2, or 'b'.")
 
     def _choose_eda_class(self, available_classes: list[str]) -> str | None:
