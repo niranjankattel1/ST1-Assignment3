@@ -41,8 +41,21 @@ class KaggleHub:
             selected_dirs.append(folder_path)
 
         test_data_root = self.output_dir.parent / "test_data"
-        
-        # Clear existing test_data directory if it exists
+        existing_images = []
+        if test_data_root.exists():
+            existing_images = [
+                file for file in test_data_root.iterdir()
+                if file.is_file() and file.suffix.lower() in SUPPORTED_EXTENSIONS
+            ]
+
+        if len(existing_images) >= 15:
+            print(
+                f"test_data already contains {len(existing_images)} images. "
+                "Skipping organize_data."
+            )
+            return
+
+        # Clear existing test_data directory if it exists and is incomplete
         if test_data_root.exists():
             shutil.rmtree(test_data_root)
         
