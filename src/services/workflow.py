@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 from pandas import DataFrame
+from pathlib import Path
 
 from src.config import EDA_OUTPUT_DIR, MODEL_OUTPUT_DIR, RAW_DATA_DIR
 from src.services.classifier import Classifier
@@ -11,19 +12,26 @@ from .kaggle_hub import KaggleHub
 
 
 class WorkflowService:
-    """Coordinate the shared workflow used by batch, GUI, and console entry points."""
+    """Coordinate the shared workflow used by batch, GUI, and console entry points.
 
-    def __init__(self) -> None:
+    If `raw_data_dir` is provided it will be used as the dataset root and the
+    Kaggle download/organize steps will be skipped. Otherwise the default
+    `RAW_DATA_DIR` behaviour is preserved.
+    """
+
+    def __init__(self, raw_data_dir: Path | None = None) -> None:
         EDA_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         MODEL_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        self.indexer = DatasetIndexer()
+        self.indexer = DatasetIndexer(raw_data_dir)
         self.preprocessor = ImagePreprocessor()
         self.classifier = Classifier(self.preprocessor, MODEL_OUTPUT_DIR)
         self.dataframe: pd.DataFrame | None = None
 
-        kaggle_hub = KaggleHub(RAW_DATA_DIR)
-        kaggle_hub.get_raw_data()
-        kaggle_hub.organize_data()
+        # Only fetch/organize the packaged Kaggle data when no custom path
+        if raw_data_dir is None:
+            kaggle_hub = KaggleHub(RAW_DATA_DIR)
+            kaggle_hub.get_raw_data()
+            kaggle_hub.organize_data()
 
 
     def load_dataframe(self) -> DataFrame:
@@ -45,12 +53,13 @@ class WorkflowService:
 
     def get_available_classes(self) -> list[str]:
         """Return available class folder names for EDA selection."""
+        # Prefer to list class folders from the indexer's configured data dir.
+        base = self.indexer.data_dir
+        candidate = base / "stream_macroinvertebrates"
+        class_root = candidate if candidate.exists() and candidate.is_dir() else base
 
-        class_root = RAW_DATA_DIR / "stream_macroinvertebrates"
         if class_root.exists() and class_root.is_dir():
-            classes = sorted(
-                [path.name for path in class_root.iterdir() if path.is_dir()]
-            )
+            classes = sorted([path.name for path in class_root.iterdir() if path.is_dir()])
             if classes:
                 return classes
 

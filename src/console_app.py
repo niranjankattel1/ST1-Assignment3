@@ -128,6 +128,33 @@ class ConsoleApp:
             return str(path)
 
 
+def _select_data_source() -> Path | None:
+    """Ask the user whether to use the default dataset or a custom raw-data folder.
+
+    Returns a Path for a custom raw folder, or `None` to indicate the default
+    packaged dataset should be used.
+    """
+    while True:
+        print("Data source selection:")
+        print("1. Use default packaged dataset (download & organize)")
+        print("2. Use custom raw data folder (no test splitting)")
+        choice = input("Choose data source (1-2): ").strip()
+        if choice == "1":
+            return None
+        if choice == "2":
+            path_str = input("Enter path to raw data folder: ").strip()
+            if not path_str:
+                print("Path cannot be empty. Try again.")
+                continue
+            path = Path(path_str)
+            if not path.exists() or not path.is_dir():
+                print("Provided path does not exist or is not a directory. Try again.")
+                continue
+            return path
+        print("Invalid choice. Enter 1 or 2.")
+
+
 if __name__ == "__main__":
-    workflow = WorkflowService()
+    custom_path = _select_data_source()
+    workflow = WorkflowService(custom_path)
     ConsoleApp(workflow).run()

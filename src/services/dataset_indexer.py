@@ -6,10 +6,14 @@ from src.models.image_record import ImageRecord
 
 
 class DatasetIndexer:
-    """Scan the dataset folder and build a tabular image index."""
+    """Scan the dataset folder and build a tabular image index.
 
-    def __init__(self) -> None:
-        self.data_dir = RAW_DATA_DIR
+    Accepts an optional `data_dir` so callers can index custom raw data
+    directories instead of the default `RAW_DATA_DIR` from config.
+    """
+
+    def __init__(self, data_dir: Path | None = None) -> None:
+        self.data_dir = Path(data_dir) if data_dir is not None else RAW_DATA_DIR
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.processed_data_dir = PROCESSED_DATA_DIR
         self.processed_data_dir.mkdir(parents=True, exist_ok=True)
